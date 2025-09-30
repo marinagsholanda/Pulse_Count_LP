@@ -22,40 +22,20 @@
 #include "main.h"
 
 #include <stdbool.h>
+#include "stm32_seq.h"
 
 #include "SEGGER_RTT.h"
 #define PRINTF(...) (void)SEGGER_RTT_printf(0,__VA_ARGS__)
 #define PRINT(ENABLE,...) \
 	if (ENABLE) { (void)SEGGER_RTT_printf(0,__VA_ARGS__); }
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 
-/* USER CODE END Includes */
+/* Task ID definition */
+#define TASK_BUTTON       1 << 0
+#define TASK_SAMPLING     1 << 1
+#define TASK_NEWSAMPLE	  1 << 2
+#define ALL_TASKS   	0xFFFFFFFFu
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
 static void EXTI2_IRQHandler_Config(void);
 /* USER CODE END PFP */
 
@@ -72,6 +52,62 @@ static void EXTI2_IRQHandler_Config(void);
 uint32_t pulse_cnt = 0;
 bool is_sampling = false;
 
+void task_button(void)
+{
+	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2) == GPIO_PIN_RESET)
+	{
+		is_sampling = true;
+		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	}
+}
+
+void task_sampling(void)
+{
+	static uint32_t start_ms = 0;
+	static uint32_t pin_set_cnt = 0;
+	static uint32_t samples_cnt = 0;
+	const uint32_t current_ms = HAL_GetTick();
+
+	if (current_ms < (start_ms + 1))
+	{
+		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	}
+
+	start_ms = current_ms;
+
+	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2) == GPIO_PIN_RESET)
+	{
+		pin_set_cnt++;
+	}
+
+	start_ms = current_ms;
+
+	if (samples_cnt < 10)
+	{
+		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	}
+
+	samples_cnt = 0;
+
+	if (pin_set_cnt >= 8)
+	{
+		pulse_cnt++;
+		PRINT(1,"New Sample: %u.\n", pulse_cnt);
+	}
+
+	pin_set_cnt = 0;
+
+	UTIL_SEQ_SetTask(TASK_NEWSAMPLE, 0);
+}
+
+void task_new_sample(void)
+{
+	if (is_sampling == true)
+	{
+		is_sampling = sampling();// ....???
+	}
+}
+
 bool sampling(void)
 {
 	static uint32_t start_ms = 0;
@@ -82,7 +118,7 @@ bool sampling(void)
 
 	static uint32_t samples_cnt = 0;
 
-	//Coletar uma amostra por seg
+	//Coletar uma amostra por miliseg
 	if (current_ms < (start_ms + 1))
 	{
 		return true;
@@ -269,10 +305,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   //Autoriza a amostra se o botão for setado
   if (GPIO_Pin == BUTTON_SW1_PIN)
   {
-	  if (is_sampling == false)
-	  {
-		  is_sampling = true;
-	  }
+	  UTIL_SEQ_SetTask(TASK_BUTTON, 0);
   }
   return;
 }
