@@ -22,22 +22,40 @@
 #include "main.h"
 
 #include <stdbool.h>
-#include "stm32_seq.h"
 
 #include "SEGGER_RTT.h"
 #define PRINTF(...) (void)SEGGER_RTT_printf(0,__VA_ARGS__)
 #define PRINT(ENABLE,...) \
 	if (ENABLE) { (void)SEGGER_RTT_printf(0,__VA_ARGS__); }
 /* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 
-/* Task ID definition */
-#define TASK_SAMPLING     		1 << 0
-#define TASK_NEWSAMPLE	  		1 << 1
-#define TASK_LEDBLINKING		1 << 2
-#define TASK_PRINTPULSECNT		1 << 3
-#define ALL_TASKS   	  		0xFFFFFFFFu
+/* USER CODE END Includes */
 
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+/* USER CODE BEGIN PFP */
+/* Private function prototypes -----------------------------------------------*/
 static void EXTI2_IRQHandler_Config(void);
 /* USER CODE END PFP */
 
@@ -54,18 +72,20 @@ static void EXTI2_IRQHandler_Config(void);
 uint32_t pulse_cnt = 0;
 bool is_sampling = false;
 
-void task_sampling(void)
+bool sampling(void)
 {
 	static uint32_t start_ms = 0;
-	static uint32_t pin_set_cnt = 0;
-	static uint32_t samples_cnt = 0;
+
 	const uint32_t current_ms = HAL_GetTick();
 
-	//Coletar uma amostra por miliseg
+	static uint32_t pin_set_cnt = 0;
+
+	static uint32_t samples_cnt = 0;
+
+	//Coletar uma amostra por seg
 	if (current_ms < (start_ms + 1))
 	{
-		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
-		return;
+		return true;
 	}
 
 	//Atualizando o tempo
@@ -83,64 +103,21 @@ void task_sampling(void)
 	//Verificar se existem amostras o suficiente
 	if (samples_cnt < 10)
 	{
-		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
-		return;
+		return true;
 	}
 
 	samples_cnt = 0;
 
 	//Verificar se existe no mínimo 80% de sucesso
-	if (pin_set_cnt >= 8)
+	if (pin_set_cnt > 8)
 	{
 		pulse_cnt++;
-		is_sampling = true;
+		PRINT(1,"New Sample: %u.\n", pulse_cnt);
 	}
 
 	pin_set_cnt = 0;
 
-	//Registrou nova amostra
-	UTIL_SEQ_SetTask(TASK_NEWSAMPLE, 0);
-}
-
-void task_new_sample(void)
-{
-	if (is_sampling == true)
-	{
-		is_sampling = false;
-		PRINT(1,"New Sample: %u.\n", pulse_cnt);
-	}
-}
-
-void task_led_blinking(void)
-{
-	for (int i = 0; i < 10; i++)
-	{
-	  BSP_LED_Toggle(LED3);
-	  HAL_Delay(200);
-	}
-}
-
-void task_print_pulse_count(void)
-{
-	uint32_t now_ms = HAL_GetTick();
-	static uint32_t init_ms = 0;
-
-	if ((now_ms - init_ms) >= 20000)
-	{
-	 init_ms = now_ms;
-	 PRINT(1,"Total sample count: %u.\n", pulse_cnt);
-	}
-}
-
-/* IDLE task function */
-void UTIL_SEQ_Idle( void )
-{
-  /*HAL_SuspendTick();
-  HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-   restore the system clock, when exits stop mode
-  HAL_ResumeTick();
-  SystemClock_Config();*/
-	__WFI();
+	return false;
 }
 
 int main(void)
@@ -148,10 +125,10 @@ int main(void)
   /* USER CODE BEGIN 1 */
   /* STM32WLxx HAL library initialization:
        - Configure the Flash prefetch
-       - Systick timer is configured by default as source of time base, but user 
-         can eventually implement his proper time base source (a general purpose 
-         timer for example or other time source), keeping in mind that Time base 
-         duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and 
+       - Systick timer is configured by default as source of time base, but user
+         can eventually implement his proper time base source (a general purpose
+         timer for example or other time source), keeping in mind that Time base
+         duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and
          handled in milliseconds basis.
        - Set NVIC Group Priority to 4
        - Low Level Initialization
@@ -162,33 +139,53 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  SystemClock_Config();
-
   SEGGER_RTT_Init();
 
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  /* USER CODE BEGIN 2 */
+  /* -1- Initialize LEDs mounted on NUCLEO-WL55JC RevC board */
   BSP_LED_Init(LED3);
 
+  /* -2- Configure External line 0 (connected to PA.00 pin) in interrupt mode */
   EXTI2_IRQHandler_Config();
 
-  UTIL_SEQ_Init();
-
-  //Registrando as tasks
-  UTIL_SEQ_RegTask(TASK_SAMPLING,0,task_sampling);
-  UTIL_SEQ_RegTask(TASK_NEWSAMPLE,0,task_new_sample);
-  UTIL_SEQ_RegTask(TASK_LEDBLINKING,0,task_led_blinking);
-  UTIL_SEQ_RegTask(TASK_PRINTPULSECNT,0,task_print_pulse_count);
-
   /* USER CODE END 2 */
-  UTIL_SEQ_SetTask(TASK_LEDBLINKING, 0);
+  for (int i = 0; i < 10; i++)
+  {
+	  BSP_LED_Toggle(LED3);
+	  HAL_Delay(200);
+  }
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 UTIL_SEQ_SetTask(TASK_PRINTPULSECNT, 0);
+	 uint32_t now_ms = HAL_GetTick();
+	 static uint32_t init_ms = 0;
 
-	 UTIL_SEQ_Run(ALL_TASKS);
+	 if ((now_ms - init_ms) >= 20000)
+	 {
+		 init_ms = now_ms;
+		 PRINT(1,"Total sample count: %u.\n", pulse_cnt);
+	 }
+
+    /* USER CODE END WHILE */
+	//Fica Amostrando até obter o resultado
+	if (is_sampling == true)
+	{
+		is_sampling = sampling();
+	}
   }
 }
 
@@ -272,7 +269,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   //Autoriza a amostra se o botão for setado
   if (GPIO_Pin == BUTTON_SW1_PIN)
   {
-	  UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	  if (is_sampling == false)
+	  {
+		  is_sampling = true;
+	  }
   }
   return;
 }

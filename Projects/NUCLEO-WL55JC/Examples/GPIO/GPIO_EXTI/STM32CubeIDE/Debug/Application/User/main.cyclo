@@ -1,0 +1,11 @@
+../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:449:22:LL_AHB2_GRP1_EnableClock	1
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:65:6:task_sampling	5
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:113:6:task_new_sample	2
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:122:6:task_led_blinking	2
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:131:6:task_print_pulse_count	2
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:144:6:UTIL_SEQ_Idle	1
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:154:5:main	1
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:207:6:SystemClock_Config	3
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:250:13:EXTI2_IRQHandler_Config	1
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:278:6:HAL_GPIO_EXTI_Callback	2
+C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c:293:6:Error_Handler	1

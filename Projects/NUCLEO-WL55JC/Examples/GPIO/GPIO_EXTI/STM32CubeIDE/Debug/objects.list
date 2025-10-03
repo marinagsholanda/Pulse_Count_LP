@@ -1,5 +1,6 @@
 "./Application/Startup/startup_stm32wl55jcix.o"
 "./Application/User/main.o"
+"./Application/User/stm32_seq.o"
 "./Application/User/stm32wlxx_hal_msp.o"
 "./Application/User/stm32wlxx_it.o"
 "./Application/User/syscalls.o"
