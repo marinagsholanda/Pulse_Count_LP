@@ -26,6 +26,12 @@ Application/Startup \
 Application/User \
 Drivers/BSP/STM32WLxx_Nucleo \
 Drivers/CMSIS \
+Drivers/STM32WLxx_HAL_Driver/Src \
 Drivers/STM32WLxx_HAL_Driver \
+hal \
+misc \
 segger \
+. \
+timer \
+tiny_lpm \
 

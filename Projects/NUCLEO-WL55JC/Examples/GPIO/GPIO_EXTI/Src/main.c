@@ -23,7 +23,9 @@
 
 #include <stdbool.h>
 #include "stm32_seq.h"
-
+#include "stm32_timer.h"
+#include "timer_if.h"
+#include "stm32wlxx_hal.h"
 #include "SEGGER_RTT.h"
 #define PRINTF(...) (void)SEGGER_RTT_printf(0,__VA_ARGS__)
 #define PRINT(ENABLE,...) \
@@ -32,9 +34,7 @@
 
 /* Task ID definition */
 #define TASK_SAMPLING     		1 << 0
-#define TASK_NEWSAMPLE	  		1 << 1
-#define TASK_LEDBLINKING		1 << 2
-#define TASK_PRINTPULSECNT		1 << 3
+#define TASK_PRINTPULSECNT		1 << 1
 #define ALL_TASKS   	  		0xFFFFFFFFu
 
 void SystemClock_Config(void);
@@ -53,23 +53,13 @@ static void EXTI2_IRQHandler_Config(void);
 
 uint32_t pulse_cnt = 0;
 bool is_sampling = false;
+static UTIL_TIMER_Object_t
+  timer_1ms = { 0 };
 
 void task_sampling(void)
 {
-	static uint32_t start_ms = 0;
 	static uint32_t pin_set_cnt = 0;
 	static uint32_t samples_cnt = 0;
-	const uint32_t current_ms = HAL_GetTick();
-
-	//Coletar uma amostra por miliseg
-	if (current_ms < (start_ms + 1))
-	{
-		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
-		return;
-	}
-
-	//Atualizando o tempo
-	start_ms = current_ms;
 
 	//Verificar se o pino está setado e registrar
 	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2) == GPIO_PIN_RESET)
@@ -83,11 +73,11 @@ void task_sampling(void)
 	//Verificar se existem amostras o suficiente
 	if (samples_cnt < 10)
 	{
-		UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
 		return;
 	}
 
 	samples_cnt = 0;
+	UTIL_TIMER_Stop(&timer_1ms);
 
 	//Verificar se existe no mínimo 80% de sucesso
 	if (pin_set_cnt >= 8)
@@ -99,11 +89,6 @@ void task_sampling(void)
 	pin_set_cnt = 0;
 
 	//Registrou nova amostra
-	UTIL_SEQ_SetTask(TASK_NEWSAMPLE, 0);
-}
-
-void task_new_sample(void)
-{
 	if (is_sampling == true)
 	{
 		is_sampling = false;
@@ -111,36 +96,31 @@ void task_new_sample(void)
 	}
 }
 
-void task_led_blinking(void)
-{
-	for (int i = 0; i < 10; i++)
-	{
-	  BSP_LED_Toggle(LED3);
-	  HAL_Delay(200);
-	}
-}
-
 void task_print_pulse_count(void)
 {
-	uint32_t now_ms = HAL_GetTick();
-	static uint32_t init_ms = 0;
-
-	if ((now_ms - init_ms) >= 20000)
-	{
-	 init_ms = now_ms;
-	 PRINT(1,"Total sample count: %u.\n", pulse_cnt);
-	}
+  PRINT(1,"Total sample count: %u.\n", pulse_cnt);
 }
 
 /* IDLE task function */
 void UTIL_SEQ_Idle( void )
 {
-  /*HAL_SuspendTick();
+  HAL_SuspendTick();
   HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-   restore the system clock, when exits stop mode
+   //restore the system clock, when exits stop mode
   HAL_ResumeTick();
-  SystemClock_Config();*/
-	__WFI();
+  SystemClock_Config();
+}
+
+void timer_20s_callback(void * p_arg)
+{
+	UTIL_SEQ_SetTask(TASK_PRINTPULSECNT, 0);
+	return;
+}
+
+void timer_1ms_callback(void * p_arg)
+{
+	UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	return;
 }
 
 int main(void)
@@ -159,7 +139,6 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -171,23 +150,37 @@ int main(void)
 
   EXTI2_IRQHandler_Config();
 
+  extern RTC_HandleTypeDef hrtc;
+  (void) HAL_RTC_RegisterCallback(&hrtc,
+  	                                HAL_RTC_ALARM_A_EVENT_CB_ID,
+									HAL_RTC_AlarmAEventCallback);
+
   UTIL_SEQ_Init();
+  UTIL_TIMER_Init();
 
   //Registrando as tasks
   UTIL_SEQ_RegTask(TASK_SAMPLING,0,task_sampling);
-  UTIL_SEQ_RegTask(TASK_NEWSAMPLE,0,task_new_sample);
-  UTIL_SEQ_RegTask(TASK_LEDBLINKING,0,task_led_blinking);
   UTIL_SEQ_RegTask(TASK_PRINTPULSECNT,0,task_print_pulse_count);
 
+  for (int i = 0; i < 10; i++)
+  {
+    BSP_LED_Toggle(LED3);
+  }
+
+  static UTIL_TIMER_Object_t
+  timer_20s = { 0 };
+
+  UTIL_TIMER_Create(&timer_20s,20000,UTIL_TIMER_PERIODIC,&timer_20s_callback,NULL);
+  UTIL_TIMER_Create(&timer_1ms,1,UTIL_TIMER_PERIODIC,&timer_1ms_callback,NULL);
+
   /* USER CODE END 2 */
-  UTIL_SEQ_SetTask(TASK_LEDBLINKING, 0);
+
+  UTIL_TIMER_Start(&timer_20s);
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 UTIL_SEQ_SetTask(TASK_PRINTPULSECNT, 0);
-
 	 UTIL_SEQ_Run(ALL_TASKS);
   }
 }
@@ -272,10 +265,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   //Autoriza a amostra se o botão for setado
   if (GPIO_Pin == BUTTON_SW1_PIN)
   {
-	  UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	  UTIL_TIMER_Start(&timer_1ms);
   }
   return;
 }
+
 /* USER CODE END 4 */
 
 /**

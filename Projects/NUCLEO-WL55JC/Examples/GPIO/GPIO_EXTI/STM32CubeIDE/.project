@@ -38,9 +38,59 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/GPIO_EXTI.ioc</locationURI>
 		</link>
 		<link>
+			<name>misc</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>stm32_mem.c</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/misc/stm32_mem.c</locationURI>
+		</link>
+		<link>
+			<name>stm32_mem.h</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/misc/stm32_mem.h</locationURI>
+		</link>
+		<link>
+			<name>timer</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>tiny_lpm</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>Doc/readme.txt</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/readme.txt</locationURI>
+		</link>
+		<link>
+			<name>misc/stm32_tiny_vsnprintf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/misc/stm32_tiny_vsnprintf.c</locationURI>
+		</link>
+		<link>
+			<name>misc/stm32_tiny_vsnprintf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/misc/stm32_tiny_vsnprintf.h</locationURI>
+		</link>
+		<link>
+			<name>timer/timer_if.c</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/timer/timer_if.c</locationURI>
+		</link>
+		<link>
+			<name>tiny_lpm/stm32_lpm.c</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/lpm/tiny_lpm/stm32_lpm.c</locationURI>
+		</link>
+		<link>
+			<name>tiny_lpm/stm32_lpm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/lpm/tiny_lpm/stm32_lpm.h</locationURI>
 		</link>
 		<link>
 			<name>Application/User/main.c</name>

@@ -33,6 +33,8 @@ Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo.o: \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rcc_ex.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_exti.h \
+ ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc.h \
+ ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc_ex.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h
 C:/Users/Marina/STM32CubeWL_ContPulse/Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo.h:
 C:/Users/Marina/STM32CubeWL_ContPulse/Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo_errno.h:
@@ -67,4 +69,6 @@ C:/Users/Marina/STM32CubeWL_ContPulse/Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nuc
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rcc_ex.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_exti.h:
+../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc.h:
+../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc_ex.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h:

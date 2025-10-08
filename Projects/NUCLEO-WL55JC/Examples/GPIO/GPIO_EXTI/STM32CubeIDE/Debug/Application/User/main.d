@@ -31,10 +31,17 @@ Application/User/main.o: \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rcc_ex.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_exti.h \
+ ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc.h \
+ ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc_ex.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h \
  ../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo.h \
  ../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo_errno.h \
  ../../Inc/stm32wlxx_nucleo_conf.h ../../Inc/stm32_seq.h \
+ ../../Inc/stm32_timer.h \
+ ../../../../../../../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../../Inc/utilities_conf.h ../../Inc/stm32_mem.h \
+ ../../Inc/stm32_tiny_vsnprintf.h ../../Inc/timer_if.h \
+ ../../Inc/stm32_timer.h ../../Inc/stm32_systime.h \
  C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT.h \
  C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT_Conf.h
 ../../Inc/main.h:
@@ -68,10 +75,20 @@ Application/User/main.o: \
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_bus.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rcc_ex.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_exti.h:
+../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc.h:
+../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc_ex.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h:
 ../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo.h:
 ../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo_errno.h:
 ../../Inc/stm32wlxx_nucleo_conf.h:
 ../../Inc/stm32_seq.h:
+../../Inc/stm32_timer.h:
+../../../../../../../Drivers/CMSIS/Include/cmsis_compiler.h:
+../../Inc/utilities_conf.h:
+../../Inc/stm32_mem.h:
+../../Inc/stm32_tiny_vsnprintf.h:
+../../Inc/timer_if.h:
+../../Inc/stm32_timer.h:
+../../Inc/stm32_systime.h:
 C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT.h:
 C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT_Conf.h:
