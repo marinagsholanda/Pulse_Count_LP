@@ -32,3 +32,4 @@
 "./stm32_mem.o"
 "./timer/timer_if.o"
 "./tiny_lpm/stm32_lpm.o"
+"./tiny_lpm/stm32_lpm_if.o"

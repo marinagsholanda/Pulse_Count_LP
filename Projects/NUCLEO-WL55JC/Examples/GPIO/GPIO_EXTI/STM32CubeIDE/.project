@@ -93,6 +93,16 @@
 			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/lpm/tiny_lpm/stm32_lpm.h</locationURI>
 		</link>
 		<link>
+			<name>tiny_lpm/stm32_lpm_if.c</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.c</locationURI>
+		</link>
+		<link>
+			<name>tiny_lpm/stm32_lpm_if.h</name>
+			<type>1</type>
+			<locationURI>PARENT-7-PROJECT_LOC/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.h</locationURI>
+		</link>
+		<link>
 			<name>Application/User/main.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Src/main.c</locationURI>

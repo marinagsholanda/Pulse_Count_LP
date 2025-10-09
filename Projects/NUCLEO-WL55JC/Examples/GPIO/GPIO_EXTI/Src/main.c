@@ -26,6 +26,7 @@
 #include "stm32_timer.h"
 #include "timer_if.h"
 #include "stm32wlxx_hal.h"
+#include "stm32_lpm_if.h"
 #include "SEGGER_RTT.h"
 #define PRINTF(...) (void)SEGGER_RTT_printf(0,__VA_ARGS__)
 #define PRINT(ENABLE,...) \
@@ -104,11 +105,7 @@ void task_print_pulse_count(void)
 /* IDLE task function */
 void UTIL_SEQ_Idle( void )
 {
-  HAL_SuspendTick();
-  HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-   //restore the system clock, when exits stop mode
-  HAL_ResumeTick();
-  SystemClock_Config();
+	UTIL_LPM_EnterLowPower();
 }
 
 void timer_20s_callback(void * p_arg)
@@ -140,6 +137,14 @@ int main(void)
 
   /* MCU Configuration--------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  extern uint8_t _segger_load_;
+  extern uint8_t _segger_addr_;
+  extern uint8_t _segger_size_;
+
+  (void) memcpy((void *)&_segger_addr_,
+	            (const void *)&_segger_load_,
+	            (size_t)&_segger_size_);
+
   HAL_Init();
 
   SystemClock_Config();
@@ -148,6 +153,12 @@ int main(void)
 
   BSP_LED_Init(LED3);
 
+  UTIL_SEQ_Init();
+
+  UTIL_TIMER_Init();
+
+  UTIL_LPM_DeInit();
+
   EXTI2_IRQHandler_Config();
 
   extern RTC_HandleTypeDef hrtc;
@@ -155,16 +166,18 @@ int main(void)
   	                                HAL_RTC_ALARM_A_EVENT_CB_ID,
 									HAL_RTC_AlarmAEventCallback);
 
-  UTIL_SEQ_Init();
-  UTIL_TIMER_Init();
-
   //Registrando as tasks
   UTIL_SEQ_RegTask(TASK_SAMPLING,0,task_sampling);
   UTIL_SEQ_RegTask(TASK_PRINTPULSECNT,0,task_print_pulse_count);
 
+  UTIL_LPM_SetStopMode(1 << 0, UTIL_LPM_ENABLE);
+  UTIL_LPM_SetOffMode(1 << 0, UTIL_LPM_DISABLE);
+
+  PRINT(1,"Start code.\n");
   for (int i = 0; i < 10; i++)
   {
     BSP_LED_Toggle(LED3);
+    HAL_Delay(200);
   }
 
   static UTIL_TIMER_Object_t
@@ -196,11 +209,15 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
+  HAL_PWR_EnableBkUpAccess();
+
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI | RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON,
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = RCC_MSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_11;
@@ -224,6 +241,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
+  HAL_PWR_DisableBkUpAccess();
 }
 
 /* USER CODE BEGIN 4 */

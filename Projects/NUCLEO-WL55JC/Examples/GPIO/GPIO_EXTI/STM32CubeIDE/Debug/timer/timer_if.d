@@ -43,7 +43,7 @@ timer/timer_if.o: \
  ../../Inc/utilities_conf.h ../../Inc/stm32_mem.h \
  ../../Inc/utilities_conf.h ../../Inc/stm32_tiny_vsnprintf.h \
  ../../Inc/stm32_systime.h \
- C:/Users/Marina/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/lpm/tiny_lpm/stm32_lpm.h \
+ C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm.h \
  C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/confs/utilities_def.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_rtc.h \
  C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/controller/hal/hal_rtc.h
@@ -92,7 +92,7 @@ C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/timer/stm32_t
 ../../Inc/utilities_conf.h:
 ../../Inc/stm32_tiny_vsnprintf.h:
 ../../Inc/stm32_systime.h:
-C:/Users/Marina/IoG/iog-fw/fw/src/sdk/st/wba/Utilities/lpm/tiny_lpm/stm32_lpm.h:
+C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm.h:
 C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/confs/utilities_def.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_rtc.h:
 C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/controller/hal/hal_rtc.h:

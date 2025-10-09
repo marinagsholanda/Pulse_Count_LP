@@ -1,6 +1,7 @@
-Application/User/main.o: \
- C:/Users/Marina/STM32CubeWL_ContPulse/Projects/NUCLEO-WL55JC/Examples/GPIO/GPIO_EXTI/Src/main.c \
- ../../Inc/main.h \
+tiny_lpm/stm32_lpm_if.o: \
+ C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.c \
+ C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm.h \
+ C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal.h \
  ../../Inc/stm32wlxx_hal_conf.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_dma.h \
@@ -33,20 +34,9 @@ Application/User/main.o: \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_exti.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc.h \
  ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc_ex.h \
- ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h \
- ../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo.h \
- ../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo_errno.h \
- ../../Inc/stm32wlxx_nucleo_conf.h ../../Inc/stm32_seq.h \
- ../../Inc/stm32_timer.h \
- ../../../../../../../Drivers/CMSIS/Include/cmsis_compiler.h \
- ../../Inc/utilities_conf.h ../../Inc/stm32_mem.h \
- ../../Inc/stm32_tiny_vsnprintf.h ../../Inc/timer_if.h \
- ../../Inc/stm32_timer.h ../../Inc/stm32_systime.h \
- C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.h \
- C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm.h \
- C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT.h \
- C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT_Conf.h
-../../Inc/main.h:
+ ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h
+C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm.h:
+C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal.h:
 ../../Inc/stm32wlxx_hal_conf.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_dma.h:
@@ -80,19 +70,3 @@ Application/User/main.o: \
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_hal_rtc_ex.h:
 ../../../../../../../Drivers/STM32WLxx_HAL_Driver/Inc/stm32wlxx_ll_system.h:
-../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo.h:
-../../../../../../../Drivers/BSP/STM32WLxx_Nucleo/stm32wlxx_nucleo_errno.h:
-../../Inc/stm32wlxx_nucleo_conf.h:
-../../Inc/stm32_seq.h:
-../../Inc/stm32_timer.h:
-../../../../../../../Drivers/CMSIS/Include/cmsis_compiler.h:
-../../Inc/utilities_conf.h:
-../../Inc/stm32_mem.h:
-../../Inc/stm32_tiny_vsnprintf.h:
-../../Inc/timer_if.h:
-../../Inc/stm32_timer.h:
-../../Inc/stm32_systime.h:
-C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm_if.h:
-C:/Users/Marina/IoG/iog-fw/fw/src/sdk/lp-fwk/src/fw/third-party/st/low-power/stm32_lpm.h:
-C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT.h:
-C:/Users/Marina/IoG/iog-fw/fw/src/Middlewares/Third_Party/segger/SEGGER_RTT_Conf.h:

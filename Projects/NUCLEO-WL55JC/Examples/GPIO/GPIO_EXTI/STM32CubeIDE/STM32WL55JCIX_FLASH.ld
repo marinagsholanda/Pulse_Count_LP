@@ -16,7 +16,7 @@ MEMORY
 {
   ROM    (rx)    : ORIGIN = 0x08000000, LENGTH = 256K
   RAM1   (xrw)   : ORIGIN = 0x20000000, LENGTH = 32K    /* Non-backup SRAM1 */
-  RAM2   (xrw)   : ORIGIN = 0x20009000, LENGTH = 32K    /* Backup SRAM2 */
+  RAM2   (xrw)   : ORIGIN = 0x20008000, LENGTH = 32K    /* Backup SRAM2 */
 }
 
 /* Sections */
@@ -114,7 +114,19 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
     
   } >RAM1 AT> ROM
+  
+  _segger_load_ = LOADADDR(.segger);
+    .segger : 
+  {
+    . = ALIGN(8);
+    _segger_addr_ = .;        /* create a global symbol at data start */
+    *(.segger)           /* .data sections */
+    *(.segger*)          /* .data* sections */
 
+    . = ALIGN(8);
+    
+  } >RAM2 AT> ROM
+  _segger_size_ = SIZEOF(.segger);
   /* Uninitialized data section into "SRAM1" Ram type memory */
   . = ALIGN(8);
   .bss :
