@@ -34,12 +34,15 @@
 /* Private includes ----------------------------------------------------------*/
 
 /* Task ID definition */
-#define TASK_SAMPLING     		1 << 0
-#define TASK_PRINTPULSECNT		1 << 1
+#define TASK_SAMPLING_BT1     	1 << 0
+#define TASK_SAMPLING_BT2     	1 << 1
+#define TASK_PRINTPULSECNT		1 << 2
 #define ALL_TASKS   	  		0xFFFFFFFFu
 
 void SystemClock_Config(void);
 static void EXTI2_IRQHandler_Config(void);
+static void EXTI0_IRQHandler_Config(void);
+void Config_GPIO_ForLP(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -57,7 +60,7 @@ bool is_sampling = false;
 static UTIL_TIMER_Object_t
   timer_1ms = { 0 };
 
-void task_sampling(void)
+void task_sampling_bt1(void)
 {
 	static uint32_t pin_set_cnt = 0;
 	static uint32_t samples_cnt = 0;
@@ -97,6 +100,47 @@ void task_sampling(void)
 	}
 }
 
+uint32_t magnet_cnt = 0;
+static UTIL_TIMER_Object_t
+  timer_3ms = { 0 };
+void task_sampling_bt2(void)
+{
+	static uint32_t pin_set_counter = 0;
+	static uint32_t samples_counter = 0;
+
+	//Verificar se o pino está setado e registrar
+	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET)
+	{
+		pin_set_counter++;
+	}
+
+	//Encrementar o número de amostras
+	samples_counter++;
+
+	//Verificar se existem amostras o suficiente
+	if (samples_counter < 10)
+	{
+		return;
+	}
+
+	samples_counter = 0;
+	UTIL_TIMER_Stop(&timer_3ms);
+
+	//Verificar se existe no mínimo 80% de sucesso
+	if (pin_set_counter >= 8)
+	{
+		magnet_cnt++;
+	}
+
+	pin_set_counter = 0;
+
+	if (magnet_cnt == 3)
+	{
+		PRINT(1,"Total sample count: %u.\n", pulse_cnt);
+		magnet_cnt = 0;
+	}
+}
+
 void task_print_pulse_count(void)
 {
   PRINT(1,"Total sample count: %u.\n", pulse_cnt);
@@ -116,7 +160,13 @@ void timer_20s_callback(void * p_arg)
 
 void timer_1ms_callback(void * p_arg)
 {
-	UTIL_SEQ_SetTask(TASK_SAMPLING, 0);
+	UTIL_SEQ_SetTask(TASK_SAMPLING_BT1, 0);
+	return;
+}
+
+void timer_3ms_callback(void * p_arg)
+{
+	UTIL_SEQ_SetTask(TASK_SAMPLING_BT2, 0);
 	return;
 }
 
@@ -151,6 +201,8 @@ int main(void)
 
   SEGGER_RTT_Init();
 
+  HAL_DBGMCU_EnableDBGStopMode();
+
   BSP_LED_Init(LED3);
 
   UTIL_SEQ_Init();
@@ -160,6 +212,7 @@ int main(void)
   UTIL_LPM_DeInit();
 
   EXTI2_IRQHandler_Config();
+  EXTI0_IRQHandler_Config();
 
   extern RTC_HandleTypeDef hrtc;
   (void) HAL_RTC_RegisterCallback(&hrtc,
@@ -167,7 +220,8 @@ int main(void)
 									HAL_RTC_AlarmAEventCallback);
 
   //Registrando as tasks
-  UTIL_SEQ_RegTask(TASK_SAMPLING,0,task_sampling);
+  UTIL_SEQ_RegTask(TASK_SAMPLING_BT1,0,task_sampling_bt1);
+  UTIL_SEQ_RegTask(TASK_SAMPLING_BT2,0,task_sampling_bt2);
   UTIL_SEQ_RegTask(TASK_PRINTPULSECNT,0,task_print_pulse_count);
 
   UTIL_LPM_SetStopMode(1 << 0, UTIL_LPM_ENABLE);
@@ -180,16 +234,19 @@ int main(void)
     HAL_Delay(200);
   }
 
+  Config_GPIO_ForLP();
+
   static UTIL_TIMER_Object_t
   timer_20s = { 0 };
 
   UTIL_TIMER_Create(&timer_20s,20000,UTIL_TIMER_PERIODIC,&timer_20s_callback,NULL);
   UTIL_TIMER_Create(&timer_1ms,1,UTIL_TIMER_PERIODIC,&timer_1ms_callback,NULL);
+  UTIL_TIMER_Create(&timer_3ms,3,UTIL_TIMER_PERIODIC,&timer_3ms_callback,NULL);
 
   /* USER CODE END 2 */
-
+#if 0
   UTIL_TIMER_Start(&timer_20s);
-
+#endif
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -245,12 +302,6 @@ void SystemClock_Config(void)
   HAL_PWR_DisableBkUpAccess();
 }
 
-/* USER CODE BEGIN 4 */
-/**
-  * @brief  Configures EXTI line 0 (connected to PA.00 pin) in interrupt mode
-  * @param  None
-  * @retval None
-  */
 static void EXTI2_IRQHandler_Config(void)
 {
   GPIO_InitTypeDef   GPIO_InitStructure;
@@ -273,6 +324,54 @@ static void EXTI2_IRQHandler_Config(void)
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 }
 
+static void EXTI0_IRQHandler_Config(void)
+{
+  GPIO_InitTypeDef   GPIO_InitStructure;
+
+
+  /* Enable GPIOA clock */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /* Configure PA.00 pin as input floating */
+  GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
+
+
+  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  GPIO_InitStructure.Pin = BUTTON_SW2_PIN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+
+  /* Enable and set line 0 Interrupt to the lowest priority */
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+void Config_GPIO_ForLP(void)
+{
+  //return;
+  GPIO_InitTypeDef   GPIO_InitStructure;
+
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+
+  GPIO_InitStructure.Pin = GPIO_PIN_All & ~(GPIO_PIN_0 | GPIO_PIN_2 | GPIO_PIN_11 | GPIO_PIN_13 | GPIO_PIN_14);
+  GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  GPIO_InitStructure.Pin = GPIO_PIN_All & ~(GPIO_PIN_3);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  GPIO_InitStructure.Pin = GPIO_PIN_All;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+  HAL_GPIO_Init(GPIOH, &GPIO_InitStructure);
+
+  __HAL_RCC_GPIOB_CLK_DISABLE();
+  __HAL_RCC_GPIOC_CLK_DISABLE();
+  __HAL_RCC_GPIOH_CLK_DISABLE();
+}
 
 /**
   * @brief EXTI line detection callbacks
@@ -285,6 +384,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   if (GPIO_Pin == BUTTON_SW1_PIN)
   {
 	  UTIL_TIMER_Start(&timer_1ms);
+  }
+
+  else if (GPIO_Pin == BUTTON_SW2_PIN)
+  {
+	  UTIL_TIMER_Start(&timer_3ms);
   }
   return;
 }

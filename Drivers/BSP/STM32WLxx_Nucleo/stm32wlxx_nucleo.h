@@ -202,17 +202,17 @@ typedef enum
 #endif
 #define H_EXTI_2                                hpb_exti[BUTTON_SW1]
 
-#define BUTTON_SW2_PIN                          GPIO_PIN_1
+#define BUTTON_SW2_PIN                          GPIO_PIN_0
 #define BUTTON_SW2_GPIO_PORT                    GPIOA
 #define BUTTON_SW2_GPIO_CLK_ENABLE()            __HAL_RCC_GPIOA_CLK_ENABLE()
 #define BUTTON_SW2_GPIO_CLK_DISABLE()           __HAL_RCC_GPIOA_CLK_DISABLE()
-#define BUTTON_SW2_EXTI_LINE                    EXTI_LINE_1
+#define BUTTON_SW2_EXTI_LINE                    EXTI_LINE_0
 #ifdef CORE_CM0PLUS
-#define BUTTON_SW2_EXTI_IRQn                    EXTI1_0_IRQn
+#define BUTTON_SW2_EXTI_IRQn                    EXTI0_0_IRQn
 #else
-#define BUTTON_SW2_EXTI_IRQn                    EXTI1_IRQn
+#define BUTTON_SW2_EXTI_IRQn                    EXTI0_IRQn
 #endif
-#define H_EXTI_1                                hpb_exti[BUTTON_SW2]
+#define H_EXTI_0                                hpb_exti[BUTTON_SW2]
 
 #define BUTTON_SW3_PIN                          GPIO_PIN_6
 #define BUTTON_SW3_GPIO_PORT                    GPIOC
