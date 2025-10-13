@@ -138,6 +138,7 @@ void task_sampling_bt2(void)
 	{
 		PRINT(1,"Total sample count: %u.\n", pulse_cnt);
 		magnet_cnt = 0;
+		HAL_Delay(200);
 	}
 }
 
@@ -200,8 +201,6 @@ int main(void)
   SystemClock_Config();
 
   SEGGER_RTT_Init();
-
-  HAL_DBGMCU_EnableDBGStopMode();
 
   BSP_LED_Init(LED3);
 
@@ -336,7 +335,7 @@ static void EXTI0_IRQHandler_Config(void)
   GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
 
 
-  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  GPIO_InitStructure.Pull = GPIO_PULLDOWN;
   GPIO_InitStructure.Pin = BUTTON_SW2_PIN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -356,7 +355,7 @@ void Config_GPIO_ForLP(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
 
-  GPIO_InitStructure.Pin = GPIO_PIN_All & ~(GPIO_PIN_0 | GPIO_PIN_2 | GPIO_PIN_11 | GPIO_PIN_13 | GPIO_PIN_14);
+  GPIO_InitStructure.Pin = GPIO_PIN_All & ~(GPIO_PIN_0 | GPIO_PIN_2 | GPIO_PIN_13 | GPIO_PIN_14);
   GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);

@@ -181,6 +181,11 @@ void EXTI2_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(BUTTON_SW1_PIN);
 }
 
+void EXTI0_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(BUTTON_SW2_PIN);
+}
+
 void
 RTC_Alarm_IRQHandler(
 	void)
