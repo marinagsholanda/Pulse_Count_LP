@@ -204,11 +204,11 @@ int main(void)
 
   BSP_LED_Init(LED3);
 
-  UTIL_SEQ_Init();
+  UTIL_SEQ_DeInit();
 
   UTIL_TIMER_Init();
 
-  UTIL_LPM_DeInit();
+  UTIL_LPM_Init();
 
   EXTI2_IRQHandler_Config();
   EXTI0_IRQHandler_Config();
